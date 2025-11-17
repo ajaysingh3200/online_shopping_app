@@ -1,14 +1,21 @@
-# Build stage
-FROM node:20-alpine as build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
+# Getting the base image
+FROM node:18
 
-# Production stage with Nginx
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Setting the working directory for keelping all files in one place
+WORKDIR /app
+
+# Copying everything from current directory to working directory in the container
+
+COPY . .
+
+# Installing all the dependencies
+
+RUN npm install
+
+# Exppose the port on which the app will run
+
+EXPOSE 5173
+
+# Serve the application
+
+CMD ["npm", "run", "dev"] 
